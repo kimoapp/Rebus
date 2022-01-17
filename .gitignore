@@ -22,3 +22,4 @@ src/Rebus.Tests/azure_connection_string.txt
 
 !tools/mongodb/bin
 tools/mongodb/bin/*.pdb
+src/packages/

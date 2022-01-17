@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Bson;
 using System.Linq;
+using MongoDB.Driver.Core.Connections;
 using Ponder;
 using Rebus.Logging;
 
@@ -157,7 +158,16 @@ namespace Rebus.MongoDb
                        sagaData.Id,
                        sagaData.Revision);
             }
-            catch (WriteConcernException ex)
+            catch (Exception ex)
+            {
+                AssertNoRaceConditions(ex, sagaData);
+                throw;
+            }
+        }
+
+        private void AssertNoRaceConditions(Exception ex, ISagaData sagaData)
+        {
+            if (ex is MongoWriteConcernException || ex is MongoWriteConcernExceptionEx)
             {
                 // in case of race conditions, we get a duplicate key error because the upsert
                 // cannot proceed to insert a document with the same _id as an existing document
@@ -194,12 +204,10 @@ namespace Rebus.MongoDb
                        sagaData.Id,
                        sagaData.Revision);
             }
-            catch (WriteConcernException ex)
+            catch (Exception ex)
             {
-                // in case of race conditions, we get a duplicate key error because the upsert
-                // cannot proceed to insert a document with the same _id as an existing document
-                // ... therefore, we map the MongoSafeModeException to our own OptimisticLockingException
-                throw new OptimisticLockingException(sagaData, ex);
+                AssertNoRaceConditions(ex, sagaData);
+                throw;
             }
         }
 
@@ -226,12 +234,10 @@ namespace Rebus.MongoDb
                                    sagaData.Id,
                                    sagaData.Revision);
             }
-            catch (WriteConcernException ex)
+            catch (Exception ex)
             {
-                // in case of race conditions, we get a duplicate key error because the upsert
-                // cannot proceed to insert a document with the same _id as an existing document
-                // ... therefore, we map the MongoSafeModeException to our own OptimisticLockingException
-                throw new OptimisticLockingException(sagaData, ex);
+                AssertNoRaceConditions(ex, sagaData);
+                throw;
             }
         }
 
@@ -400,12 +406,12 @@ which will make the persister use the type of the saga to come up with collectio
 
         void EnsureResultIsGood(WriteConcernResult writeConcernResult, string message, int expectedNumberOfAffectedDocuments, params object[] objs)
         {
-            if (!writeConcernResult.Ok)
+            if (writeConcernResult.HasLastErrorMessage)
             {
                 var exceptionMessage = string.Format("Tried to {0}, but apparently the operation didn't succeed.",
                                                      string.Format(message, objs));
 
-                throw new WriteConcernException(exceptionMessage, writeConcernResult);
+                throw new MongoWriteConcernExceptionEx(exceptionMessage, writeConcernResult);
             }
 
             if (writeConcernResult.DocumentsAffected != expectedNumberOfAffectedDocuments)
@@ -414,7 +420,7 @@ which will make the persister use the type of the saga to come up with collectio
                                                      string.Format(message, objs),
                                                      expectedNumberOfAffectedDocuments);
 
-                throw new WriteConcernException(exceptionMessage, writeConcernResult);
+                throw new MongoWriteConcernExceptionEx(exceptionMessage, writeConcernResult);
             }
         }
     }

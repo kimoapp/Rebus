@@ -127,11 +127,13 @@
     <Compile Include="..\..\lib\Ponder\Ponder.cs">
       <Link>Ponder.cs</Link>
     </Compile>
+    <Compile Include="BsonDocumentHelper.cs" />
     <Compile Include="MongoDbExtensions.cs" />
     <Compile Include="MongoDbSagaPersister.cs" />
     <Compile Include="MongoDbSubscriptionStorage.cs" />
     <Compile Include="MongoDbTimeoutStorage.cs" />
     <Compile Include="MongoHelper.cs" />
+    <Compile Include="MongoWriteConcernExceptionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

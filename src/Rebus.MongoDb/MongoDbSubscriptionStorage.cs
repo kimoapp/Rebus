@@ -75,12 +75,16 @@ namespace Rebus.MongoDb
 
         void EnsureResultIsGood(WriteConcernResult writeConcernResult, string message, params object[] objs)
         {
-            if (!writeConcernResult.Ok)
+            //[UPGRADE mongocsharpdriver to 2.x]
+            //if (!writeConcernResult.Ok)
+            //Actually not really needed, an exception would be raised before this check:
+            //https://groups.google.com/g/mongodb-user/c/ZCJ5yNNoAQw
+            if (writeConcernResult.HasLastErrorMessage)
             {
                 throw new ApplicationException(
                     string.Format("The following operation didn't suceed: {0} - the result was: {1}",
                                   string.Format(message, objs),
-                                  writeConcernResult.ErrorMessage));
+                                  writeConcernResult.LastErrorMessage));
             }
         }
     }

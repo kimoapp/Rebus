@@ -41,7 +41,7 @@ namespace Rebus.MongoDb
                 .Add(CorrIdProperty, newTimeout.CorrelationId)
                 .Add(SagaIdProperty, newTimeout.SagaId)
                 .Add(TimeProperty, newTimeout.TimeToReturn)
-                .Add(DataProperty, newTimeout.CustomData)
+                .AddIfNotNull(DataProperty, newTimeout.CustomData)
                 .Add(ReplyToProperty, newTimeout.ReplyTo);
 
             collection.Insert(doc);

@@ -95,7 +95,9 @@
 
     <!-- Revert NuSpec versions. Version doesn't need to be committed to repo. -->
     <XmlPoke XmlInputPath="%(NuSpecFiles.FullPath)" Query="//version" Value="$(DefaultNuSpecVersion)" />
-    <XmlPoke XmlInputPath="%(DependantNuSpecFiles.FullPath)" Query="//dependency[@id='Rebus']/@version" Value="$(DefaultNuSpecVersion)" />
+    <!--
+	<XmlPoke XmlInputPath="%(DependantNuSpecFiles.FullPath)" Query="//dependency[@id='Rebus']/@version" Value="$(DefaultNuSpecVersion)" />
+	-->
   </Target>
 
   <Target Name="updateNuspecVersions" Condition="'$(Version)' != ''">

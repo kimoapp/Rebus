@@ -14,7 +14,7 @@
     <tags>rebus async lambda</tags>
     <iconUrl>https://github.com/mookid8000/Rebus/raw/master/artwork/logo200x200-transparent.png</iconUrl>
     <dependencies>
-      <dependency id="Rebus" version="0.0.1" />
+      <dependency id="Rebus" version="500.71.1" />
     </dependencies>
   </metadata>
   <files>
